@@ -3,6 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
+from std_msgs.msg import String
 import serial
 import time
 
@@ -43,6 +44,13 @@ class SerialBridge(Node):
             '/joint_states/joint3',
             self.joint3_callback,
             10)
+        
+         # ✅ Gripper Command를 위한 Subscriber 추가
+        self.subscription_gripper = self.create_subscription(
+            String,
+            '/gripper_command',
+            self.gripper_callback,
+            10)
 
         self.get_logger().info('Arduino Serial Bridge 노드가 시작되었습니다.')
 
@@ -56,6 +64,12 @@ class SerialBridge(Node):
     def joint3_callback(self, msg):
         angle = msg.data
         command = f"J3:{angle:.2f}\n"
+        self.serial_port.write(command.encode('utf-8'))
+        self.get_logger().info(f'Sent to Arduino: {command.strip()}')
+    
+    def gripper_callback(self, msg):
+        # 아두이노로 보낼 명령어 생성 (예: "G:open\n")
+        command = f"G:{msg.data}\n"
         self.serial_port.write(command.encode('utf-8'))
         self.get_logger().info(f'Sent to Arduino: {command.strip()}')
 
