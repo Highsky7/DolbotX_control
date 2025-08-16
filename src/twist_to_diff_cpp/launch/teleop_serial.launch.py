@@ -14,10 +14,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         Node(package='joy', executable='joy_node', name='joy_node', parameters=[joy_cfg]),
+        
         Node(package='teleop_twist_joy', executable='teleop_node',
              name='teleop_twist_joy_node', parameters=[teleop_cfg]),
+             
         Node(package='twist_to_diff_cpp', executable='twist_to_diff',
              name='twist_to_diff', parameters=[{'wheel_base': 0.5}]),
+             
         Node(package='wheel_serial_bridge', executable='bridge_unified',
              name='wheel_serial_bridge_unified', parameters=[bridge_cfg]),
     ])
